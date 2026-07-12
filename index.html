@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masayuki Yamazaki | Creative Developer & AI Researcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+  }
+}
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:#000;color:#f4f4f5;font-family:'Inter',sans-serif;overflow-x:hidden;line-height:1.7}
+canvas#bg{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;display:block}
+main{position:relative;z-index:1;width:100%}
+section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 10%;position:relative}
+.section-inner{max-width:700px;width:100%}
+#hero{align-items:flex-start}
+#hero h1{font-size:clamp(3rem,7vw,6rem);font-weight:800;letter-spacing:-3px;line-height:1.1;margin-bottom:20px}
+#hero h1 span{display:block}
+#hero .tagline{font-size:clamp(1.1rem,2.5vw,1.8rem);font-weight:300;background:linear-gradient(135deg,#00f2fe,#4facfe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+#hero .sub{font-size:0.9rem;color:rgba(255,255,255,0.4);letter-spacing:3px;text-transform:uppercase;margin-bottom:40px}
+.scroll-indicator{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:rgba(255,255,255,0.3);font-size:0.65rem;letter-spacing:4px;text-transform:uppercase;animation:bounce 2s infinite}
+.scroll-indicator .line{width:1px;height:40px;background:linear-gradient(to bottom,rgba(255,255,255,0.3),transparent)}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.8s ease,transform 0.8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.section-label{font-size:0.7rem;color:#4facfe;letter-spacing:4px;text-transform:uppercase;font-weight:600;margin-bottom:12px}
+.section-title{font-size:clamp(2rem,4vw,3.5rem);font-weight:700;letter-spacing:-1.5px;margin-bottom:30px;line-height:1.2}
+#about{align-items:flex-end;text-align:right}
+.quote{border-right:3px solid #4facfe;padding-right:20px;font-size:1.3rem;font-style:italic;margin-bottom:30px;color:rgba(255,255,255,0.9);line-height:1.6}
+.about-text{color:rgba(255,255,255,0.7);font-weight:300;font-size:1.05rem;line-height:1.9;margin-bottom:30px}
+.stats-row{display:flex;gap:30px;justify-content:flex-end}
+.stat-item{text-align:center}
+.stat-num{font-size:2rem;font-weight:700;background:linear-gradient(135deg,#00f2fe,#4facfe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:0.7rem;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.skills-section .skill-group{margin-bottom:28px}
+.skills-section .skill-group:last-child{margin-bottom:0}
+.skill-group-label{font-size:0.75rem;color:#4facfe;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.skill-tags{display:flex;flex-wrap:wrap;gap:10px}
+.skill-tag{padding:6px 18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:999px;font-size:0.85rem;color:rgba(255,255,255,0.8);font-weight:400;transition:all 0.2s}
+.skill-tag:hover{background:rgba(79,172,254,0.1);border-color:rgba(79,172,254,0.3);color:#4facfe}
+.skill-tag.highlight{border-color:rgba(167,139,250,0.3);color:#a78bfa}
+#experience{align-items:flex-end;text-align:right}
+.timeline{position:relative;padding-right:20px;width:100%}
+.timeline::after{content:'';position:absolute;right:0;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,#00f2fe,#4facfe,transparent);box-shadow:0 0 15px rgba(0,242,254,0.3)}
+.timeline-item{position:relative;padding-right:30px;margin-bottom:40px;text-align:right}
+.timeline-item:last-child{margin-bottom:0}
+.timeline-item::before{content:'';position:absolute;right:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:#4facfe;box-shadow:0 0 15px rgba(79,172,254,0.5);z-index:2}
+.timeline-date{font-size:0.7rem;color:#4facfe;letter-spacing:2px;font-weight:600;display:block;margin-bottom:4px}
+.timeline-company{font-size:1.1rem;font-weight:600;color:white;margin-bottom:2px}
+.timeline-role{font-size:0.85rem;color:rgba(255,255,255,0.5);font-weight:400;margin-bottom:8px}
+.timeline-desc{font-size:0.85rem;color:rgba(255,255,255,0.6);font-weight:300;line-height:1.8}
+.pub-grid{display:grid;grid-template-columns:1fr;gap:16px}
+.pub-card{display:block;padding:24px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;text-decoration:none;color:inherit;transition:all 0.3s;position:relative}
+.pub-card:hover{background:rgba(255,255,255,0.04);border-color:rgba(79,172,254,0.2);transform:translateX(4px)}
+.pub-badge{display:inline-block;padding:3px 12px;border-radius:4px;font-size:0.6rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.pub-badge.conference{background:rgba(79,172,254,0.1);color:#4facfe}
+.pub-status{display:inline-block;padding:2px 10px;border-radius:4px;font-size:0.55rem;font-weight:700;letter-spacing:0.5px;margin-left:8px}
+.pub-status.open-review{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.pub-status.accepted{background:#ecfdf5;color:#059669;border:1px solid #a7f3d0}
+.pub-card h3{font-size:0.95rem;font-weight:600;margin-bottom:4px;line-height:1.5}
+.pub-card .pub-authors{font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:8px}
+.pub-card .pub-abstract{font-size:0.8rem;color:rgba(255,255,255,0.55);line-height:1.7;font-weight:300}
+#contact{align-items:flex-start}
+.contact-text{color:rgba(255,255,255,0.6);font-weight:300;font-size:1rem;margin-bottom:30px;max-width:500px}
+.contact-links{display:flex;flex-direction:column;gap:12px}
+.contact-link{display:flex;align-items:center;gap:14px;padding:14px 20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:10px;text-decoration:none;color:inherit;transition:all 0.3s;max-width:400px}
+.contact-link:hover{border-color:rgba(79,172,254,0.2);transform:translateX(4px);background:rgba(255,255,255,0.04)}
+.contact-link .icon{font-size:1rem;opacity:0.5}
+.contact-link .clabel{font-size:0.65rem;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.contact-link .cvalue{font-size:0.85rem;font-weight:500}
+footer{text-align:center;padding:40px 10%;color:rgba(255,255,255,0.2);font-size:0.65rem;letter-spacing:2px}
+@media(max-width:768px){
+  section{padding:60px 6%}
+  .about-text,.quote{text-align:left}
+  .stats-row{justify-content:flex-start}
+  .timeline{text-align:left;padding-right:0;padding-left:20px}
+  .timeline::after{right:auto;left:0}
+  .timeline-item{padding-right:0;padding-left:30px;text-align:left}
+  .timeline-item::before{right:auto;left:-7px}
+  #about{align-items:flex-start;text-align:left}
+  #experience{align-items:flex-start;text-align:left}
+}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<main>
+
+<section id="hero">
+  <div class="section-inner reveal visible">
+    <h1><span>MASAYUKI</span><span>YAMAZAKI</span></h1>
+    <div class="tagline">Creative Developer & UI Engineer</div>
+    <div class="sub">Frontend &bull; UI/UX &bull; Machine Learning</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <a href="#research" style="padding:12px 32px;background:linear-gradient(135deg,#00f2fe,#4facfe);color:#000;border-radius:8px;text-decoration:none;font-size:0.85rem;font-weight:600;letter-spacing:0.5px;transition:all 0.3s;box-shadow:0 4px 20px rgba(79,172,254,0.3)">RESEARCH</a>
+      <a href="#contact" style="padding:12px 32px;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);border-radius:8px;text-decoration:none;font-size:0.85rem;font-weight:500;letter-spacing:0.5px;transition:all 0.3s">CONTACT</a>
+    </div>
+  </div>
+  <div class="scroll-indicator"><span>SCROLL</span><div class="line"></div></div>
+</section>
+
+<section id="about">
+  <div class="section-inner reveal">
+    <div class="quote">"Developer Experience drives User Experience."</div>
+    <p class="about-text">カオスなフロントエンドに秩序をもたらす。大規模なモノレポアーキテクチャの構築から、ピクセル単位のマイクロインタラクションまで。技術の力で、美しさとスケーラビリティを両立させる。</p>
+    <div class="stats-row">
+      <div class="stat-item"><div class="stat-num">20+</div><div class="stat-label">Years</div></div>
+      <div class="stat-item"><div class="stat-num">8+</div><div class="stat-label">Papers</div></div>
+      <div class="stat-item"><div class="stat-num">50+</div><div class="stat-label">Projects</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="skills" class="skills-section">
+  <div class="section-inner reveal">
+    <div class="section-label">TECHNICAL STACK</div>
+    <h2 class="section-title">Skills & Expertise</h2>
+    <div class="skill-group">
+      <div class="skill-group-label">Frontend</div>
+      <div class="skill-tags">
+        <span class="skill-tag">TypeScript</span><span class="skill-tag">React</span><span class="skill-tag">Next.js</span><span class="skill-tag">Tailwind CSS</span><span class="skill-tag">Three.js</span><span class="skill-tag">GSAP</span><span class="skill-tag">WebGL</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-label">Backend & Infrastructure</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Go</span><span class="skill-tag">Node.js</span><span class="skill-tag">GraphQL</span><span class="skill-tag">Google Cloud</span><span class="skill-tag">AWS</span><span class="skill-tag">Vercel</span><span class="skill-tag">Docker</span><span class="skill-tag">Kubernetes</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-label">AI & Machine Learning</div>
+      <div class="skill-tags">
+        <span class="skill-tag highlight">Python</span><span class="skill-tag highlight">PyTorch</span><span class="skill-tag highlight">scikit-learn</span><span class="skill-tag highlight">LightGBM</span><span class="skill-tag highlight">NumPy</span><span class="skill-tag highlight">Pandas</span><span class="skill-tag highlight">Matplotlib</span><span class="skill-tag highlight">Jupyter</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-label">Tools & Methodology</div>
+      <div class="skill-tags">
+        <span class="skill-tag">GitHub Actions</span><span class="skill-tag">Turborepo</span><span class="skill-tag">Agile/Scrum</span><span class="skill-tag">CI/CD</span><span class="skill-tag">MLOps</span><span class="skill-tag">Exp. Design</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="section-inner reveal">
+    <div class="section-label">CAREER</div>
+    <h2 class="section-title">Experience</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <span class="timeline-date">2024 — PRESENT</span>
+        <div class="timeline-role">Freelance / Technical Consultant</div>
+        <div class="timeline-company">Independent</div>
+        <div class="timeline-desc">外資系メガテック企業での大規模開発・スケーラビリティ設計の経験を活かし、スタートアップから東証プライム上場企業までを対象に、モダンWeb技術の導入、CI/CDパイプラインの高速化、パフォーマンスチューニング、堅牢なフロントエンド基盤の構築に特化した技術コンサルティングおよびハンズオンでの高度な実装を提供。</div>
+      </div>
+      <div class="timeline-item">
+        <span class="timeline-date">2019 — 2024</span>
+        <div class="timeline-role">Senior Frontend Engineer</div>
+        <div class="timeline-company">Google</div>
+        <div class="timeline-desc">グローバル展開する検索・クラウドプラットフォームにおいて、エンタープライズ向けWebアプリケーションのフロントエンド・アーキテクチャの大規模刷新を牽引。TypeScript、React、Next.jsをベースとした大規模モノレポ環境を構築し、Core Web Vitalsの数値を35%改善。</div>
+      </div>
+      <div class="timeline-item">
+        <span class="timeline-date">2013 — 2019</span>
+        <div class="timeline-role">Software Engineer</div>
+        <div class="timeline-company">Meta</div>
+        <div class="timeline-desc">世界最大級のSNSプラットフォームにおける、アジア市場向け機能拡張および広告マッチングエンジンの最適化プロジェクトを担当。データドリブン開発とアジャイルスクラムを実践し、既存システムからGoを用いたマイクロサービスへの移行を主導。</div>
+      </div>
+      <div class="timeline-item">
+        <span class="timeline-date">2004 — 2013</span>
+        <div class="timeline-role">Backend Engineer</div>
+        <div class="timeline-company">Rakuten Group</div>
+        <div class="timeline-desc">Java、PHP、MySQLを用いたエンタープライズ向けの基幹システム、および大規模ECサイトのバックエンド開発に従事。Webエンジニアリングの堅牢な基礎を確立。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="research">
+  <div class="section-inner reveal">
+    <div class="section-label">RESEARCH</div>
+    <h2 class="section-title">Publications</h2>
+    <p style="color:rgba(255,255,255,0.5);font-weight:300;font-size:0.95rem;margin-bottom:30px;line-height:1.8">深層学習の正則化・最適化に関する研究。特に適応的正則化スケジューリングと学習ダイナミクスの解析に焦点を当てている。</p>
+    <div class="pub-grid">
+      <a href="papers/lars_reg_icml2026/index.html" class="pub-card">
+        <span class="pub-badge conference">ICML 2026</span>
+        <span class="pub-status open-review">OPEN REVIEW</span>
+        <h3>Layer-Adaptive Regularization Scheduling: A Unified Framework for Training Stability in Deep Networks</h3>
+        <p class="pub-authors">A. Kobayashi, R. Nishimura, T. Fujita, M. Endo</p>
+        <p class="pub-abstract">勾配ノルム分散に基づく層別正則化スケジューリング（LARS-Reg）を提案。各層の勾配ノルム分散を監視し、ドロップアウト率とWeight Decayを動的に調整する。ResNetで最大2.3%精度向上。現在オープンレビュー中（Weak Reject）。</p>
+      </a>
+      <a href="papers/tcr_icml2026/index.html" class="pub-card">
+        <span class="pub-badge conference">ICML 2026</span>
+        <span class="pub-status accepted">ACCEPTED</span>
+        <h3>Temporal Consistency Regularization for Catastrophic Forgetting Mitigation in Continual Learning</h3>
+        <p class="pub-authors">Y. Matsumoto, R. Takahashi, A. Ogawa, K. Shimizu</p>
+        <p class="pub-abstract">継続学習の破局的忘却を抑制する手法TCRを提案。タスク間の中間層表現の時間的一貫性を正則化項として導入。メモリバッファなしでReplay手法に匹敵。平均忘却率1.8〜3.2pt改善。</p>
+      </a>
+      <a href="papers/clas_icml2026/index.html" class="pub-card">
+        <span class="pub-badge conference">ICML 2026</span>
+        <span class="pub-status accepted">ACCEPTED</span>
+        <h3>Cross-Layer Attention Sparsification for Efficient Transformer Fine-tuning</h3>
+        <p class="pub-authors">S. Watanabe, K. Yamashita, H. Ito, N. Sakurai</p>
+        <p class="pub-abstract">層間Attention相関を利用した冗長ヘッド検出手法CLASを提案。GLUE 8タスクでBERT-Large/RoBERTa-Large/T5-Baseに適用し、既存手法比+0.6〜1.1pt改善。学習時間オーバーヘッド+4.7%のみ。</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="section-inner reveal">
+    <div class="section-label">CONTACT</div>
+    <h2 class="section-title">Get in Touch</h2>
+    <p class="contact-text">技術コンサルティングのご依頼、研究に関するコラボレーション、講演のご依頼など、お気軽にご連絡ください。</p>
+    <div class="contact-links">
+      <a href="#" class="contact-link"><span class="icon">📧</span><div><div class="clabel">EMAIL</div><div class="cvalue">masayuki.yamazaki@example.com</div></div></a>
+      <a href="#" class="contact-link"><span class="icon">💼</span><div><div class="clabel">LINKEDIN</div><div class="cvalue">linkedin.com/in/masayuki-yamazaki</div></div></a>
+      <a href="#" class="contact-link"><span class="icon">📄</span><div><div class="clabel">GOOGLE SCHOLAR</div><div class="cvalue">scholar.google.com/citations?user=...</div></div></a>
+      <a href="#" class="contact-link"><span class="icon">🐙</span><div><div class="clabel">GITHUB</div><div class="cvalue">github.com/masayuki-yamazaki</div></div></a>
+    </div>
+  </div>
+</section>
+
+<footer>© 2026 MASAYUKI YAMAZAKI All rights reserved.</footer>
+</main>
+
+<script type="module">
+import * as THREE from 'three';
+
+const canvas = document.getElementById('bg');
+if(!canvas) throw new Error('no canvas');
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x000000, 0.02);
+
+const cameraGroup = new THREE.Group();
+scene.add(cameraGroup);
+
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+camera.position.set(0, 3, 15);
+cameraGroup.add(camera);
+
+const parameters = {
+  count: 200000,
+  radius: 20,
+  branches: 5,
+  spin: 2,
+  randomness: 0.5,
+  randomnessPower: 3,
+  insideColor: '#ff4020',
+  outsideColor: '#1040ff'
+};
+
+let geometry, material, points;
+
+const generateGalaxy = () => {
+  geometry = new THREE.BufferGeometry();
+  const positions = new Float32Array(parameters.count * 3);
+  const colors = new Float32Array(parameters.count * 3);
+  const scales = new Float32Array(parameters.count);
+  const randomness = new Float32Array(parameters.count * 3);
+
+  const colorInside = new THREE.Color(parameters.insideColor);
+  const colorOutside = new THREE.Color(parameters.outsideColor);
+
+  for(let i = 0; i < parameters.count; i++){
+    const i3 = i * 3;
+    const radius = Math.random() * parameters.radius;
+    const branchAngle = (i % parameters.branches) / parameters.branches * Math.PI * 2;
+
+    positions[i3] = Math.cos(branchAngle) * radius;
+    positions[i3+1] = 0;
+    positions[i3+2] = Math.sin(branchAngle) * radius;
+
+    randomness[i3] = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+    randomness[i3+1] = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+    randomness[i3+2] = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+
+    const mixedColor = colorInside.clone().lerp(colorOutside, radius / parameters.radius);
+    colors[i3] = mixedColor.r;
+    colors[i3+1] = mixedColor.g;
+    colors[i3+2] = mixedColor.b;
+    scales[i] = Math.random();
+  }
+
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1));
+  geometry.setAttribute('aRandomness', new THREE.BufferAttribute(randomness, 3));
+
+  material = new THREE.ShaderMaterial({
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexColors: true,
+    uniforms: {
+      uTime: { value: 0 },
+      uSize: { value: 30 * renderer.getPixelRatio() }
+    },
+    vertexShader: `
+      uniform float uTime;
+      uniform float uSize;
+      attribute float aScale;
+      attribute vec3 aRandomness;
+      varying vec3 vColor;
+      void main() {
+        vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+        float angle = atan(modelPosition.x, modelPosition.z);
+        float distanceToCenter = length(modelPosition.xz);
+        float angleOffset = (1.0 / distanceToCenter) * uTime * 0.2;
+        angle += angleOffset;
+        modelPosition.x = cos(angle) * distanceToCenter;
+        modelPosition.z = sin(angle) * distanceToCenter;
+        modelPosition.xyz += aRandomness;
+        modelPosition.y += sin(uTime * 1.0 + distanceToCenter * 2.0) * 0.2;
+        vec4 viewPosition = viewMatrix * modelPosition;
+        vec4 projectedPosition = projectionMatrix * viewPosition;
+        gl_Position = projectedPosition;
+        gl_PointSize = uSize * aScale;
+        gl_PointSize *= (1.0 / -viewPosition.z);
+        vColor = color;
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vColor;
+      void main() {
+        float strength = distance(gl_PointCoord, vec2(0.5));
+        strength = 1.0 - strength;
+        strength = pow(strength, 3.0);
+        gl_FragColor = vec4(mix(vec3(0.0), vColor, strength), 1.0);
+      }
+    `
+  });
+
+  points = new THREE.Points(geometry, material);
+  scene.add(points);
+};
+
+generateGalaxy();
+
+// Resize
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Scroll
+let scrollY = 0, currentScroll = 0;
+window.addEventListener('scroll', () => { scrollY = window.scrollY; });
+
+// Mouse
+const cursor = { x: 0, y: 0 };
+window.addEventListener('mousemove', (e) => {
+  cursor.x = e.clientX / window.innerWidth - 0.5;
+  cursor.y = e.clientY / window.innerHeight - 0.5;
+});
+
+// Animation loop
+const clock = new THREE.Clock();
+function tick() {
+  const elapsedTime = clock.getElapsedTime();
+  if(material) material.uniforms.uTime.value = elapsedTime;
+
+  currentScroll += (scrollY - currentScroll) * 0.05;
+  camera.position.z = 15 - (currentScroll * 0.005);
+  camera.position.y = 3 - (currentScroll * 0.001);
+  scene.rotation.y = currentScroll * 0.0005;
+  scene.rotation.x = currentScroll * 0.0002;
+
+  const parallaxX = cursor.x * 3;
+  const parallaxY = -cursor.y * 3;
+  cameraGroup.position.x += (parallaxX - cameraGroup.position.x) * 5 * 0.016;
+  cameraGroup.position.y += (parallaxY - cameraGroup.position.y) * 5 * 0.016;
+
+  camera.lookAt(0, 0, 0);
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+tick();
+
+// Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+document.querySelector('.reveal.visible')?.classList.add('visible');
+</script>
+</body>
+</html>

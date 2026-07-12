@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Temporal Consistency Regularization for Catastrophic Forgetting Mitigation in Continual Learning</title><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Serif JP',Georgia,serif;line-height:2;color:#1a1a1a;background:#fafafa;max-width:960px;margin:0 auto;padding:40px 30px}
+.header{text-align:center;margin-bottom:40px;padding-bottom:30px;border-bottom:3px double #333}
+h1{font-size:24px;font-weight:700;margin-bottom:15px;line-height:1.5}
+.authors{font-size:15px;color:#444;margin-bottom:8px}
+.venue{font-size:13px;color:#666;font-style:italic;margin-bottom:20px}
+.badge{display:inline-block;padding:6px 16px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+.badge.conference{background:rgba(96,165,250,0.12);color:#2563eb}
+.badge.journal{background:rgba(167,139,250,0.12);color:#7c3aed}
+.abstract-box{background:#f0f4f8;border-left:4px solid #2c5282;padding:20px 25px;margin:30px 0;border-radius:0 8px 8px 0}
+.abstract-box h2{font-size:14px;margin-bottom:10px;color:#2c5282;letter-spacing:1px;text-transform:uppercase}
+.abstract-box p{font-size:14px;text-align:justify;line-height:2}
+h2{font-size:20px;margin:40px 0 20px;padding-bottom:8px;border-bottom:2px solid #333}
+h3{font-size:17px;margin:30px 0 15px;color:#2d3748}
+p{text-align:justify;margin:15px 0;line-height:2}
+.refs{font-size:13px;margin-top:30px}
+.refs li{margin:10px 0}
+.back{display:inline-block;margin-bottom:20px;padding:8px 20px;background:#e2e8f0;border-radius:6px;text-decoration:none;color:#333;font-size:13px;transition:all 0.2s}
+.back:hover{background:#cbd5e1}
+ol,ul{margin:15px 0 15px 30px}
+li{margin:8px 0}
+b{color:#1e293b}
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;font-family:'Noto Sans JP',sans-serif}
+th{background:#2c5282;color:#fff;padding:8px 12px;text-align:left}
+td{padding:8px 12px;border-bottom:1px solid #e2e8f0}
+tr:nth-child(even){background:#f7fafc}
+.status{display:inline-block;padding:4px 14px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:0.5px;margin-bottom:16px}
+.status.open-review{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.status.accepted{background:#ecfdf5;color:#059669;border:1px solid #a7f3d0}</style></head><body>
+<a href="../../index.html#research" class="back">← Back to Portfolio</a>
+<div class="header">
+<span class="badge conference">Proceedings of the 43rd International Conference on Machine Learning</span>
+<h1>Temporal Consistency Regularization for Catastrophic Forgetting Mitigation in Continual Learning</h1>
+<p class="authors">Y. Matsumoto, R. Takahashi, A. Ogawa, K. Shimizu</p>
+<p class="venue">Proceedings of the 43rd International Conference on Machine Learning (ICML), 2026</p>
+<span class="status accepted">ACCEPTED</span>
+</div>
+<div class="abstract-box"><h2>Abstract</h2><p>継続学習における破局的忘却を抑制するため、タスク間の中間層表現の時間的一貫性を正則化項として導入する手法Temporal Consistency Regularization（TCR）を提案する。既存手法はパラメータ空間または出力空間での制約に主眼を置くが、本研究では中間表現の分布シフトを直接抑制することで、旧タスク性能の保持と新タスク学習の柔軟性のトレードオフを改善する。Split-CIFAR100、Split-MiniImageNet、CORe50の3ベンチマークにおいて、EWC、iCaRL、DER++と比較し平均忘却率を1.8〜3.2ポイント改善した。メモリバッファを必要としない設定においてもReplayベース手法に匹敵する性能を示した。</p></div>
+<h2>1. Introduction</h2>
+<p>継続学習において新タスクの学習が旧タスクの性能を劣化させる破局的忘却は長年の課題である[1]。正則化ベース手法[2]はパラメータの重要度に基づき更新を制約するが、タスク間の関係が複雑な場合に柔軟性を失う傾向がある。Replayベース手法[3]は過去データの一部を保持し再学習に用いるが、メモリ制約下では性能が大きく低下する。</p><p>本研究の貢献は以下の3点である。(1) 中間層表現の時間的一貫性を利用した新たな正則化手法TCRを提案する。(2) 3つの継続学習ベンチマークにおいて既存手法との系統的比較を行う。(3) メモリバッファなし設定における有効性を検証する。</p>
+<h2>2. Method</h2>
+<h3>2.1 Temporal Consistency Loss</h3><p>タスクtの学習時に、タスクt-1終了時点のモデルによる中間層表現と現在のモデルの中間層表現との距離を損失項として加える: ℒ<sub>TCR</sub> = Σ<sub>l</sub> λ<sub>l</sub>·||Φ<sub>l</sub><sup>(t)</sup>(x) − Φ<sub>l</sub><sup>(t-1)</sup>(x)||²</p><h3>2.2 Adaptive Weighting</h3><p>重みλ<sub>l</sub>を層ごとの表現変化量に応じて動的に調整: λ<sub>l</sub> = λ<sub>0</sub>·(1+γ·ΔΦ<sub>l</sub>)·exp(−α·t)</p><h3>2.3 Memory Cost</h3><p>旧モデルのスナップショットのみ保持。Replayバッファと比較して大幅に軽量。</p>
+<h2>3. Experiments</h2>
+<table><tr><th>Method</th><th>Split-CIFAR100</th><th>Split-MiniImageNet</th><th>CORe50</th></tr><tr><td>EWC</td><td>18.4</td><td>21.2</td><td>15.9</td></tr><tr><td>iCaRL</td><td>14.1</td><td>16.8</td><td>12.3</td></tr><tr><td>DER++</td><td>12.6</td><td>15.0</td><td>11.1</td></tr><tr><td><b>TCR (Ours)</b></td><td><b>10.8</b></td><td><b>11.8</b></td><td><b>8.6</b></td></tr></table><p style="font-size:12px;color:#555;text-align:center;margin-top:4px;">Table 1: Average Forgetting (%) — lower is better. All p < 0.01.</p><p>Ablation: consistency loss only: −1.1pt; adaptive weighting only: −0.7pt; both (TCR full): −1.8〜3.2pt.</p>
+<h2>4. Limitations</h2>
+<p>(1) タスク数が50以上の長期的安定性は未検証。(2) 一貫性損失計算に旧モデルのフォワードパスが必要であり学習時間が約1.6倍に増加。(3) タスク境界が明示的でないオンライン継続学習設定への拡張は今後の課題。</p>
+<h2>5. Conclusion</h2>
+<p>中間層表現の時間的一貫性を利用した正則化手法TCRが、メモリバッファなしでも既存のReplayベース手法に匹敵する忘却抑制性能を達成することを示した。学習時間の増加という制約はあるものの、メモリ制約の厳しい実運用環境における適用可能性が高い。</p>
+
+<h2>References</h2>
+<ol class="refs"><li>[1] McCloskey, M. & Cohen, N. (1989). Catastrophic Interference. Psychology of Learning and Motivation.</li>
+<li>[2] Kirkpatrick, J., et al. (2017). Overcoming Catastrophic Forgetting. PNAS.</li>
+<li>[3] Rebuffi, S., et al. (2017). iCaRL. CVPR.</li>
+<li>[4] Zenke, F., et al. (2017). Synaptic Intelligence. ICML.</li>
+<li>[5] Buzzega, P., et al. (2020). Dark Experience Replay++. NeurIPS.</li>
+<li>[6] Lopez-Paz, D. & Ranzato, M. (2017). Gradient Episodic Memory. NeurIPS.</li></ol>
+<div style="text-align:center;margin-top:50px;padding-top:20px;border-top:1px solid #ddd;font-size:12px;color:#999"><p>ICML 2026 Submission — Open Access</p></div>
+</body></html>

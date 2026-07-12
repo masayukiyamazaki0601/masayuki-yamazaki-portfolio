@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Cross-Layer Attention Sparsification for Efficient Transformer Fine-tuning</title><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Serif JP',Georgia,serif;line-height:2;color:#1a1a1a;background:#fafafa;max-width:960px;margin:0 auto;padding:40px 30px}
+.header{text-align:center;margin-bottom:40px;padding-bottom:30px;border-bottom:3px double #333}
+h1{font-size:24px;font-weight:700;margin-bottom:15px;line-height:1.5}
+.authors{font-size:15px;color:#444;margin-bottom:8px}
+.venue{font-size:13px;color:#666;font-style:italic;margin-bottom:20px}
+.badge{display:inline-block;padding:6px 16px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+.badge.conference{background:rgba(96,165,250,0.12);color:#2563eb}
+.badge.journal{background:rgba(167,139,250,0.12);color:#7c3aed}
+.abstract-box{background:#f0f4f8;border-left:4px solid #2c5282;padding:20px 25px;margin:30px 0;border-radius:0 8px 8px 0}
+.abstract-box h2{font-size:14px;margin-bottom:10px;color:#2c5282;letter-spacing:1px;text-transform:uppercase}
+.abstract-box p{font-size:14px;text-align:justify;line-height:2}
+h2{font-size:20px;margin:40px 0 20px;padding-bottom:8px;border-bottom:2px solid #333}
+h3{font-size:17px;margin:30px 0 15px;color:#2d3748}
+p{text-align:justify;margin:15px 0;line-height:2}
+.refs{font-size:13px;margin-top:30px}
+.refs li{margin:10px 0}
+.back{display:inline-block;margin-bottom:20px;padding:8px 20px;background:#e2e8f0;border-radius:6px;text-decoration:none;color:#333;font-size:13px;transition:all 0.2s}
+.back:hover{background:#cbd5e1}
+ol,ul{margin:15px 0 15px 30px}
+li{margin:8px 0}
+b{color:#1e293b}
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;font-family:'Noto Sans JP',sans-serif}
+th{background:#2c5282;color:#fff;padding:8px 12px;text-align:left}
+td{padding:8px 12px;border-bottom:1px solid #e2e8f0}
+tr:nth-child(even){background:#f7fafc}
+.status{display:inline-block;padding:4px 14px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:0.5px;margin-bottom:16px}
+.status.open-review{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.status.accepted{background:#ecfdf5;color:#059669;border:1px solid #a7f3d0}</style></head><body>
+<a href="../../index.html#research" class="back">← Back to Portfolio</a>
+<div class="header">
+<span class="badge conference">Proceedings of the 43rd International Conference on Machine Learning</span>
+<h1>Cross-Layer Attention Sparsification for Efficient Transformer Fine-tuning</h1>
+<p class="authors">S. Watanabe, K. Yamashita, H. Ito, N. Sakurai</p>
+<p class="venue">Proceedings of the 43rd International Conference on Machine Learning (ICML), 2026</p>
+<span class="status accepted">ACCEPTED</span>
+</div>
+<div class="abstract-box"><h2>Abstract</h2><p>大規模Transformerモデルのファインチューニングにおける計算コスト削減を目的とし、層をまたいだAttentionヘッドの重要度を動的に推定し不要なヘッドを段階的にスパース化する手法Cross-Layer Attention Sparsification（CLAS）を提案する。既存手法は各層独立に重要度を評価するが、本研究では層間のAttentionパターンの相関を利用し冗長性をより正確に検出する。GLUEベンチマーク8タスクおよび要約タスク（CNN/DailyMail）において、BERT-Large、RoBERTa-Large、T5-Baseに適用し、既存手法比+0.6〜1.1ポイントの性能低下抑制を達成。ファインチューニング時間のオーバーヘッドは+4.7%であった。</p></div>
+<h2>1. Introduction</h2>
+<p>Transformerモデルの計算コストの大部分はMulti-Head Attentionに起因する[1]。既存のヘッドプルーニング手法[2, 3]は各層の重要度を独立に評価しており、層間で冗長な情報を捉えているヘッド同士の関係性を考慮していない。</p><p>本研究の貢献：(1) 層間Attentionパターン相関を利用した冗長ヘッド検出手法CLASの提案。(2) GLUE 8タスクおよび要約タスクでの系統的評価。(3) ファインチューニング時のオーバーヘッド定量化。</p>
+<h2>2. Method</h2>
+<h3>3.1 Cross-Layer Attention Correlation</h3><p>層lと層l'におけるヘッドh, h'のAttentionパターンの相関をコサイン類似度として定義: C<sub>l,l',h,h'</sub> = cos(A<sub>l,h</sub>, A<sub>l',h'</sub>)</p><h3>3.2 Gradual Removal</h3><p>相関が閾値τ=0.85を超えるペアのうち、勾配寄与が小さい方を除去候補とし、各エポック終了時に上位k=5%を段階的にマスク。</p><h3>3.3 Computational Cost</h3><p>O(L²H²)だが実用的範囲内。ファインチューニング時間の増加は+4.7%のみ。</p>
+<h2>3. Experiments</h2>
+<table><tr><th>Method</th><th>BERT-Large</th><th>RoBERTa-Large</th><th>T5-Base</th></tr><tr><td>Magnitude Pruning</td><td>81.2</td><td>83.5</td><td>79.8</td></tr><tr><td>Michel et al. [2]</td><td>82.6</td><td>84.7</td><td>80.9</td></tr><tr><td><b>CLAS (Ours)</b></td><td><b>83.2</b></td><td><b>85.4</b></td><td><b>81.6</b></td></tr></table><p style="font-size:12px;color:#555;text-align:center;margin-top:4px;">Table 1: GLUE average score (50% head reduction). All p < 0.05.</p><p>Ablation: cross-layer correlation only: +0.4pt; gradient contribution only: +0.3pt; both (CLAS full): +0.6〜1.1pt.</p>
+<h2>4. Limitations</h2>
+<p>(1) 相関閾値τの最適値はモデルアーキテクチャに依存し汎用的な自動選択手法は未確立。(2) デコーダのみのアーキテクチャ（GPT系）では未検証。(3) 極端な削減率（80%以上）における性能劣化の分析は今後の課題。</p>
+<h2>5. Conclusion</h2>
+<p>層間Attention相関を利用した冗長ヘッド検出手法CLASが既存のヘッドプルーニング手法を一貫して上回ることを示した。実装は既存のファインチューニングパイプラインに容易に組み込み可能である。</p>
+
+<h2>References</h2>
+<ol class="refs"><li>[1] Vaswani, A., et al. (2017). Attention Is All You Need. NeurIPS.</li>
+<li>[2] Michel, P., et al. (2019). Are Sixteen Heads Really Better than One? NeurIPS.</li>
+<li>[3] Voita, E., et al. (2019). Analyzing Multi-Head Self-Attention. ACL.</li>
+<li>[4] Kornblith, S., et al. (2019). Similarity of Neural Network Representations. ICML.</li>
+<li>[5] Sanh, V., et al. (2020). Movement Pruning. NeurIPS.</li>
+<li>[6] Sajjad, H., et al. (2023). Layer-wise Analysis of Transformer Pruning. ACL.</li></ol>
+<div style="text-align:center;margin-top:50px;padding-top:20px;border-top:1px solid #ddd;font-size:12px;color:#999"><p>ICML 2026 Submission — Open Access</p></div>
+</body></html>

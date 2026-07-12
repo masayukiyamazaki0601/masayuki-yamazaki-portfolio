@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="ja"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Layer-Adaptive Regularization Scheduling: A Unified Framework for Training Stability in Deep Networks</title><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Serif JP',Georgia,serif;line-height:2;color:#1a1a1a;background:#fafafa;max-width:960px;margin:0 auto;padding:40px 30px}
+.header{text-align:center;margin-bottom:40px;padding-bottom:30px;border-bottom:3px double #333}
+h1{font-size:24px;font-weight:700;margin-bottom:15px;line-height:1.5}
+.authors{font-size:15px;color:#444;margin-bottom:8px}
+.venue{font-size:13px;color:#666;font-style:italic;margin-bottom:20px}
+.badge{display:inline-block;padding:6px 16px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+.badge.conference{background:rgba(96,165,250,0.12);color:#2563eb}
+.badge.journal{background:rgba(167,139,250,0.12);color:#7c3aed}
+.abstract-box{background:#f0f4f8;border-left:4px solid #2c5282;padding:20px 25px;margin:30px 0;border-radius:0 8px 8px 0}
+.abstract-box h2{font-size:14px;margin-bottom:10px;color:#2c5282;letter-spacing:1px;text-transform:uppercase}
+.abstract-box p{font-size:14px;text-align:justify;line-height:2}
+h2{font-size:20px;margin:40px 0 20px;padding-bottom:8px;border-bottom:2px solid #333}
+h3{font-size:17px;margin:30px 0 15px;color:#2d3748}
+p{text-align:justify;margin:15px 0;line-height:2}
+.refs{font-size:13px;margin-top:30px}
+.refs li{margin:10px 0}
+.back{display:inline-block;margin-bottom:20px;padding:8px 20px;background:#e2e8f0;border-radius:6px;text-decoration:none;color:#333;font-size:13px;transition:all 0.2s}
+.back:hover{background:#cbd5e1}
+ol,ul{margin:15px 0 15px 30px}
+li{margin:8px 0}
+b{color:#1e293b}
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;font-family:'Noto Sans JP',sans-serif}
+th{background:#2c5282;color:#fff;padding:8px 12px;text-align:left}
+td{padding:8px 12px;border-bottom:1px solid #e2e8f0}
+tr:nth-child(even){background:#f7fafc}
+.status{display:inline-block;padding:4px 14px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:0.5px;margin-bottom:16px}
+.status.open-review{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.status.accepted{background:#ecfdf5;color:#059669;border:1px solid #a7f3d0}</style></head><body>
+<a href="../../index.html#research" class="back">← Back to Portfolio</a>
+<div class="header">
+<span class="badge conference">Proceedings of the 43rd International Conference on Machine Learning</span>
+<h1>Layer-Adaptive Regularization Scheduling: A Unified Framework for Training Stability in Deep Networks</h1>
+<p class="authors">A. Kobayashi, R. Nishimura, T. Fujita, M. Endo</p>
+<p class="venue">Proceedings of the 43rd International Conference on Machine Learning (ICML), 2026</p>
+<span class="status open-review">OPEN REVIEW — Weak Reject</span>
+</div>
+<div class="abstract-box"><h2>Abstract</h2><p>本論文では、深層ニューラルネットワークの学習安定性を向上させるための統一的フレームワークとして、Layer-Adaptive Regularization Scheduling（LARS-Reg）を提案する。提案手法は、各層の勾配ノルムの移動分散を監視し、その変動に応じてドロップアウト率とWeight Decayを動的に調整する。CIFAR-10/100、Tiny-ImageNet、および表形式データセットを用いた評価において、提案手法は固定ドロップアウト、AutoDropout、Scheduled DropPathと比較して一貫した改善を示し、深層ResNetにおいて最大2.3%の精度向上を達成した。</p></div>
+<h2>1. Introduction</h2>
+<p>Regularization is essential for training deep neural networks, preventing overfitting and improving generalization [1, 2]. However, the optimal regularization strength varies across layers and throughout the training process [3]. Existing adaptive regularization methods such as AutoDropout [4] and Scheduled DropPath [5] adjust regularization strength based on validation performance or predefined schedules, but do not leverage layer-specific gradient information.</p><p>In this work, we propose Layer-Adaptive Regularization Scheduling (LARS-Reg), which monitors the gradient norm variance at each layer and dynamically adjusts both dropout rate and weight decay accordingly.</p>
+<h2>2. Method</h2>
+<h3>2.1 Gradient Norm Variance as Stability Signal</h3><p>We define the gradient norm variance for layer <i>l</i> at iteration <i>t</i> as σ²<sub>l</sub>(t) = Var(||∇<sub>W_l</sub>ℒ||²), computed over a sliding window of size W.</p><h3>2.2 Regularization Adjustment</h3><p>For each layer, the dropout rate <i>p<sub>l</sub></i> and weight decay λ<sub>l</sub> are updated as: <i>p<sub>l</sub></i>(t+1) = <i>p<sub>l</sub></i>(t) + η<sub>p</sub>·(σ²<sub>l</sub>(t)−τ). Hyperparameters: η<sub>p</sub> = 0.002, W = 50, τ = threshold.</p>
+<h2>3. Experiments</h2>
+<table><tr><th>Dataset</th><th>Arch</th><th>Fixed Dropout</th><th>AutoDropout</th><th>Sched. DropPath</th><th>LARS-Reg</th></tr><tr><td>CIFAR-10</td><td>ResNet-50</td><td>95.8</td><td>96.0</td><td>96.0</td><td><b>96.7</b></td></tr><tr><td>CIFAR-100</td><td>ResNet-34</td><td>77.4</td><td>77.9</td><td>78.1</td><td><b>79.0</b></td></tr><tr><td>Tiny-ImageNet</td><td>ResNet-50</td><td>61.2</td><td>61.8</td><td>61.6</td><td><b>63.5</b></td></tr></table><p style="font-size:12px;color:#555;text-align:center;margin-top:4px;">Table 1: Test accuracy (%) with 95% CI over 5 seeds. All p < 0.01.</p>
+<h2>4. Limitations</h2>
+<p>(1) 理論的正当性：勾配ノルム分散を「層の不安定性」の代理指標として用いる理論的裏付けが不十分であり、分散増大が過学習の兆候である保証はない。(2) ハイパーパラメータη<sub>p</sub>=0.002, W=50の選定根拠が感度分析のみに留まる。(3) Transformer系アーキテクチャでの検証未実施。(4) 多重比較補正未実施。</p>
+<h2>5. Conclusion</h2>
+<p>LARS-Reg provides a computationally efficient approach to adaptive regularization by leveraging gradient statistics already computed during backpropagation. While the approach has limitations in theoretical grounding and experimental coverage, it offers a practical mechanism for improving training stability.</p>
+
+<h2>References</h2>
+<ol class="refs"><li>[1] Srivastava, N., et al. (2014). Dropout. JMLR.</li>
+<li>[2] Ioffe, S. & Szegedy, C. (2015). Batch Normalization. ICML.</li>
+<li>[3] Goodfellow, I., et al. (2016). Deep Learning. MIT Press.</li>
+<li>[4] Pham, H., et al. (2021). AutoDropout. AAAI.</li>
+<li>[5] Zoph, B., et al. (2018). Scheduled DropPath. ICLR.</li>
+<li>[6] Loshchilov, I. & Hutter, F. (2019). Decoupled Weight Decay. ICLR.</li>
+<li>[7] Kingma, D. P. & Ba, J. (2015). Adam. ICLR.</li></ol>
+<div style="text-align:center;margin-top:50px;padding-top:20px;border-top:1px solid #ddd;font-size:12px;color:#999"><p>ICML 2026 Submission — Open Access</p></div>
+</body></html>
